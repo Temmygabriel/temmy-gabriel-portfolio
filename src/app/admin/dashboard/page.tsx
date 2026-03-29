@@ -16,7 +16,19 @@ interface Project {
   highlight: string;
 }
 
-const EMPTY: Omit<Project, 'id' | 'order'> = {
+type FormData = {
+  title: string;
+  description: string;
+  tools: string[];
+  outcome: string;
+  link: string;
+  featured: boolean;
+  category: string;
+  metric: string;
+  highlight: string;
+};
+
+const EMPTY: FormData = {
   title: '',
   description: '',
   tools: [],
@@ -28,6 +40,11 @@ const EMPTY: Omit<Project, 'id' | 'order'> = {
   highlight: '',
 };
 
+const TEXT_FIELDS = ['title', 'outcome', 'metric', 'highlight', 'category', 'link'] as const;
+const TEXTAREA_FIELDS = ['description'] as const;
+type TextField = typeof TEXT_FIELDS[number];
+type TextareaField = typeof TEXTAREA_FIELDS[number];
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -35,7 +52,7 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<Omit<Project, 'id' | 'order'>>(EMPTY);
+  const [form, setForm] = useState<FormData>(EMPTY);
   const [toolsInput, setToolsInput] = useState('');
   const [showForm, setShowForm] = useState(false);
 
@@ -63,14 +80,28 @@ export default function AdminDashboard() {
 
   const openEdit = (p: Project) => {
     setEditingId(p.id);
-    setForm({ title: p.title, description: p.description, tools: p.tools, outcome: p.outcome, link: p.link, featured: p.featured, category: p.category, metric: p.metric, highlight: p.highlight });
+    setForm({
+      title: p.title,
+      description: p.description,
+      tools: p.tools,
+      outcome: p.outcome,
+      link: p.link,
+      featured: p.featured,
+      category: p.category,
+      metric: p.metric,
+      highlight: p.highlight,
+    });
     setToolsInput(p.tools.join(', '));
     setShowForm(true);
   };
 
   const handleSave = async () => {
     setSaving(true);
-    const payload = { ...form, tools: toolsInput.split(',').map(t => t.trim()).filter(Boolean), id: editingId || undefined };
+    const payload = {
+      ...form,
+      tools: toolsInput.split(',').map(t => t.trim()).filter(Boolean),
+      id: editingId || undefined,
+    };
     const res = await fetch('/api/admin/projects', {
       method: editingId ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -89,7 +120,11 @@ export default function AdminDashboard() {
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this project? This will commit to GitHub.')) return;
     setSaving(true);
-    await fetch('/api/admin/projects', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+    await fetch('/api/admin/projects', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
     setSaving(false);
     showMsg('✓ Project deleted');
     fetchProjects();
@@ -97,10 +132,22 @@ export default function AdminDashboard() {
 
   const toggleFeatured = async (p: Project) => {
     setSaving(true);
-    await fetch('/api/admin/projects', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...p, featured: !p.featured }) });
+    await fetch('/api/admin/projects', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...p, featured: !p.featured }),
+    });
     setSaving(false);
     showMsg('✓ Featured status updated');
     fetchProjects();
+  };
+
+  const updateTextField = (field: TextField, value: string) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const updateTextareaField = (field: TextareaField, value: string) => {
+    setForm(prev => ({ ...prev, [field]: value }));
   };
 
   if (loading) return (
@@ -119,20 +166,22 @@ export default function AdminDashboard() {
           </div>
           <div>
             <p className="font-mono text-sm text-[#F0F4F8]">Admin Dashboard</p>
-            <p className="font-mono text-xs text-[#5A7A94]">Changes auto-commit to GitHub & redeploy</p>
+            <p className="font-mono text-xs text-[#5A7A94]">Changes auto-commit to GitHub &amp; redeploy</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <a href="/" className="font-mono text-xs text-[#5A7A94] hover:text-[#9DB4C8] transition-colors">
-            ← View site
-          </a>
-        </div>
+        <a href="/" className="font-mono text-xs text-[#5A7A94] hover:text-[#9DB4C8] transition-colors">
+          ← View site
+        </a>
       </div>
 
       <div className="max-w-4xl mx-auto px-6 py-10">
         {/* Message */}
         {message && (
-          <div className={`mb-6 px-4 py-3 rounded-lg font-mono text-sm border ${message.startsWith('✓') ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+          <div className={`mb-6 px-4 py-3 rounded-lg font-mono text-sm border ${
+            message.startsWith('✓')
+              ? 'bg-green-500/10 border-green-500/20 text-green-400'
+              : 'bg-red-500/10 border-red-500/20 text-red-400'
+          }`}>
             {message}
           </div>
         )}
@@ -141,7 +190,9 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl text-[#F0F4F8]" style={{ fontFamily: 'var(--font-display)' }}>Projects</h1>
-            <p className="text-[#5A7A94] text-sm mt-1">{projects.length} projects · {projects.filter(p => p.featured).length} featured</p>
+            <p className="text-[#5A7A94] text-sm mt-1">
+              {projects.length} projects · {projects.filter(p => p.featured).length} featured
+            </p>
           </div>
           <button
             onClick={openNew}
@@ -155,11 +206,18 @@ export default function AdminDashboard() {
         {/* Project list */}
         <div className="space-y-3">
           {projects.map((p) => (
-            <div key={p.id} className="bg-[#0D1420] border border-[#1E2D3D] rounded-xl p-5 flex items-start gap-4 hover:border-[#2E86AB]/30 transition-colors">
+            <div
+              key={p.id}
+              className="bg-[#0D1420] border border-[#1E2D3D] rounded-xl p-5 flex items-start gap-4 hover:border-[#2E86AB]/30 transition-colors"
+            >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-mono text-xs text-[#2E86AB]">#{p.order}</span>
-                  {p.featured && <span className="text-xs font-mono bg-[#2E86AB]/10 text-[#38B2D8] border border-[#2E86AB]/20 px-2 py-0.5 rounded-full">★ Featured</span>}
+                  {p.featured && (
+                    <span className="text-xs font-mono bg-[#2E86AB]/10 text-[#38B2D8] border border-[#2E86AB]/20 px-2 py-0.5 rounded-full">
+                      ★ Featured
+                    </span>
+                  )}
                   <span className="text-xs text-[#5A7A94] font-mono">{p.category}</span>
                 </div>
                 <h3 className="text-[#F0F4F8] font-medium truncate">{p.title}</h3>
@@ -173,7 +231,11 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={() => toggleFeatured(p)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all border ${p.featured ? 'bg-[#2E86AB]/10 border-[#2E86AB]/30 text-[#38B2D8]' : 'border-[#1E2D3D] text-[#5A7A94] hover:text-[#9DB4C8]'}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all border ${
+                    p.featured
+                      ? 'bg-[#2E86AB]/10 border-[#2E86AB]/30 text-[#38B2D8]'
+                      : 'border-[#1E2D3D] text-[#5A7A94] hover:text-[#9DB4C8]'
+                  }`}
                 >
                   {p.featured ? '★ Unfeature' : '☆ Feature'}
                 </button>
@@ -208,29 +270,54 @@ export default function AdminDashboard() {
             </div>
 
             <div className="space-y-5">
-              {(['title', 'description', 'outcome', 'metric', 'highlight', 'category', 'link'] as const).map((field) => (
+              {/* Text fields */}
+              {TEXT_FIELDS.map((field) => (
                 <div key={field}>
-                  <label className="block font-mono text-xs text-[#5A7A94] mb-1.5 tracking-wide uppercase">{field}</label>
-                  {['description', 'outcome', 'highlight'].includes(field) ? (
-                    <textarea
-                      value={(form as Record<string, string>)[field] as string}
-                      onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                      rows={3}
-                      className="w-full bg-[#080C14] border border-[#1E2D3D] rounded-lg px-3 py-2.5 text-[#F0F4F8] text-sm focus:outline-none focus:border-[#2E86AB] transition-colors resize-none"
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      value={(form as Record<string, string>)[field] as string}
-                      onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                      className="w-full bg-[#080C14] border border-[#1E2D3D] rounded-lg px-3 py-2.5 text-[#F0F4F8] text-sm focus:outline-none focus:border-[#2E86AB] transition-colors"
-                    />
-                  )}
+                  <label className="block font-mono text-xs text-[#5A7A94] mb-1.5 tracking-wide uppercase">
+                    {field}
+                  </label>
+                  <input
+                    type="text"
+                    value={form[field] as string}
+                    onChange={(e) => updateTextField(field, e.target.value)}
+                    className="w-full bg-[#080C14] border border-[#1E2D3D] rounded-lg px-3 py-2.5 text-[#F0F4F8] text-sm focus:outline-none focus:border-[#2E86AB] transition-colors"
+                  />
                 </div>
               ))}
 
+              {/* Textarea fields */}
+              {TEXTAREA_FIELDS.map((field) => (
+                <div key={field}>
+                  <label className="block font-mono text-xs text-[#5A7A94] mb-1.5 tracking-wide uppercase">
+                    {field}
+                  </label>
+                  <textarea
+                    value={form[field]}
+                    onChange={(e) => updateTextareaField(field, e.target.value)}
+                    rows={3}
+                    className="w-full bg-[#080C14] border border-[#1E2D3D] rounded-lg px-3 py-2.5 text-[#F0F4F8] text-sm focus:outline-none focus:border-[#2E86AB] transition-colors resize-none"
+                  />
+                </div>
+              ))}
+
+              {/* Outcome - textarea */}
               <div>
-                <label className="block font-mono text-xs text-[#5A7A94] mb-1.5 tracking-wide uppercase">Tools (comma-separated)</label>
+                <label className="block font-mono text-xs text-[#5A7A94] mb-1.5 tracking-wide uppercase">
+                  outcome
+                </label>
+                <textarea
+                  value={form.outcome}
+                  onChange={(e) => setForm(prev => ({ ...prev, outcome: e.target.value }))}
+                  rows={3}
+                  className="w-full bg-[#080C14] border border-[#1E2D3D] rounded-lg px-3 py-2.5 text-[#F0F4F8] text-sm focus:outline-none focus:border-[#2E86AB] transition-colors resize-none"
+                />
+              </div>
+
+              {/* Tools */}
+              <div>
+                <label className="block font-mono text-xs text-[#5A7A94] mb-1.5 tracking-wide uppercase">
+                  Tools (comma-separated)
+                </label>
                 <input
                   type="text"
                   value={toolsInput}
@@ -240,17 +327,21 @@ export default function AdminDashboard() {
                 />
               </div>
 
+              {/* Featured toggle */}
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
                   id="featured"
                   checked={form.featured}
-                  onChange={(e) => setForm({ ...form, featured: e.target.checked })}
+                  onChange={(e) => setForm(prev => ({ ...prev, featured: e.target.checked }))}
                   className="w-4 h-4 accent-[#2E86AB]"
                 />
-                <label htmlFor="featured" className="font-mono text-xs text-[#9DB4C8]">Featured project</label>
+                <label htmlFor="featured" className="font-mono text-xs text-[#9DB4C8]">
+                  Featured project
+                </label>
               </div>
 
+              {/* Actions */}
               <div className="flex gap-3 pt-4 border-t border-[#1E2D3D]">
                 <button
                   onClick={handleSave}
