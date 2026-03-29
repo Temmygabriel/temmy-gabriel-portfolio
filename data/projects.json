@@ -1,0 +1,78 @@
+[
+  {
+    "id": "nexora-fy2024",
+    "title": "Nexora Software FY2024 Financial Analysis",
+    "description": "522 rows of messy ops data. One CFO question. Four business findings that changed FY2025 planning. End-to-end financial analysis of a B2B SaaS company — from raw transaction dump to executive-ready insights, built entirely in Excel.",
+    "tools": [
+      "Excel",
+      "Google Sheets",
+      "Python",
+      "openpyxl"
+    ],
+    "outcome": "Surfaced a $2.3M marketing misalignment, exposed 31% cloud cost creep, and identified Professional Services as an unrecognised revenue engine — three findings that directly shaped FY2025 budget planning.",
+    "link": "https://github.com/Temmygabriel/nexora-fy2024-analysis",
+    "featured": true,
+    "order": 1,
+    "category": "Financial Analysis",
+    "metric": "$2.3M cost centre identified",
+    "highlight": "Excel-only deep analysis — no BI crutch, no shortcuts"
+  },
+  {
+    "id": "bank-transactions",
+    "title": "Bank Transactions Analytics",
+    "description": "Full end-to-end data pipeline on a 50,000-row synthetic banking dataset — from raw ingestion through cloud PostgreSQL, advanced SQL analysis, and fraud detection logic, to a live Power BI dashboard.",
+    "tools": [
+      "PostgreSQL",
+      "SQL",
+      "Python",
+      "Power BI",
+      "Aiven"
+    ],
+    "outcome": "Built a production-grade analytics stack on cloud infrastructure — 6 reusable reporting views, 3-sigma fraud detection logic, and a live dashboard connected to a cloud database.",
+    "link": "https://github.com/Temmygabriel/bank-transactions-analytics",
+    "featured": true,
+    "order": 2,
+    "category": "Data Engineering + Analytics",
+    "metric": "50,000 rows analysed",
+    "highlight": "Fraud detection via 3-sigma SQL — no ML needed"
+  },
+  {
+    "id": "naira-fx-tracker",
+    "title": "Naija FX Tracker — Nigeria Currency Market Analysis",
+    "description": "Python-powered FX tracking project that pulls live USD/NGN, \nNGN/GBP and NGN/EUR exchange rate data via API, cleans, and \nengineers features in pandas, and visualizes 3 years of Naira \nmovement (May 2023 → March 2026) in a 3-page Power BI dashboard \ncovering the Tinubu reform era.",
+    "tools": [
+      "Python",
+      "ExchangeRate-API",
+      "Power BI",
+      "Pandas",
+      "Matplotlib",
+      "Seaborn"
+    ],
+    "outcome": "End-to-end data analytics pipeline — from raw API data to \ninteractive Power BI dashboard — analysing the most dramatic \nperiod in Nigerian currency history.",
+    "link": "https://github.com/Temmygabriel/Naija-fx-tracker",
+    "featured": false,
+    "order": 3,
+    "category": "Data Analysis + Reporting",
+    "metric": "1,061 rows · 3 years of Naira data",
+    "highlight": "API → Clean → Analyse → Visualise"
+  },
+  {
+    "id": "jumia-market-intelligence",
+    "title": "E-Commerce Market Intelligence Dashboard",
+    "description": "210+ home appliance listings scraped from a major e-commerce platform, cleaned, analysed, and visualised to uncover pricing patterns, brand dominance, and discount strategies in a competitive consumer market.",
+    "tools": [
+      "Python",
+      "BeautifulSoup",
+      "Pandas",
+      "Power BI",
+      "Matplotlib"
+    ],
+    "outcome": "Revealed that 67% of discounted products follow a high-markup-then-deep-discount pattern — insights a brand manager or category buyer could act on immediately to adjust pricing or sourcing strategy.",
+    "link": "https://github.com/Temmygabriel",
+    "featured": false,
+    "order": 4,
+    "category": "Web Scraping + Market Analysis",
+    "metric": "210 products | 26% avg discount",
+    "highlight": "JavaScript-rendered content recovered via URL slug parsing"
+  }
+]
