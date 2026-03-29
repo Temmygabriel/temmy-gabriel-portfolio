@@ -22,7 +22,7 @@ export default function Contact() {
     return () => observer.disconnect();
   }, []);
 
-  const EMAIL = 'temmygabriel@example.com'; // Temmy should replace this
+  const EMAIL = 'Gabrieltemmy@gmail.com'; // Temmy should replace this
 
   const copyEmail = () => {
     navigator.clipboard.writeText(EMAIL);
