@@ -113,7 +113,7 @@ export default function Contact() {
             GitHub
           </a>
           <a
-            href="https://linkedin.com/in/temmygabriel"
+            href="https://www.linkedin.com/in/temitopeolatunji/"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-5 py-3 rounded-lg border border-[#1E2D3D] hover:border-[#2E86AB]/40 text-[#9DB4C8] hover:text-white transition-all duration-200 hover:-translate-y-0.5"
